@@ -8,9 +8,6 @@ cursor = con.cursor()
 
 
 def operation_on_student(flag):
-    global label_1
-    label_1.destroy()
-
     data = get_a_student(entry_1)
     result = data[0]
 
@@ -19,35 +16,27 @@ def operation_on_student(flag):
 
         if flag:
             if result:
-                label_1 = ttk.Label(frame_operation_on_student, text="Такой студент уже есть")
-                label_1.pack(pady=10)
+                label_1["text"]= "Такой студент уже есть"
             else:
                 cursor.execute("INSERT INTO students (first_name, last_name, middle_name, group_name) VALUES (?, ?, ?, ?)",
                                 (first_name, last_name, middle_name, group_name))
                 con.commit()
-                label_1 = ttk.Label(frame_operation_on_student, text="Студент добавлен")
-                label_1.pack(pady=10)
+                label_1["text"] = "Студент добавлен"
         else:
             if not result:
-                label_1 = ttk.Label(frame_operation_on_student, text="Такого студента нет")
-                label_1.pack(pady=10)
+                label_1["text"] = "Такого студента нет"
             else:
                 cursor.execute("DELETE FROM students WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
                                 (first_name, last_name, middle_name, group_name))
                 con.commit()
                 cursor.execute("DELETE FROM grades WHERE student_id=?", (student_id))
                 con.commit()
-                label_1 = ttk.Label(frame_operation_on_student, text="Студент удалён")
-                label_1.pack(pady=10)
+                label_1["text"] = "Студент удалён"
     else:
-        label_1 = ttk.Label(frame_operation_on_student, text="Неправильный ввод")
-        label_1.pack(pady=10)
+        label_1["text"] = "Неправильный ввод"
 
 
 def edit_student(option):
-    global label_2
-    label_2.destroy()
-
     data = get_a_student(entry_2)
     result = data[0]
 
@@ -55,8 +44,7 @@ def edit_student(option):
         first_name, last_name, middle_name, group_name = data[1], data[2], data[3], data[4]
 
         if not result:
-            label_2 = ttk.Label(frame_edit_student, text="Такого студента нет")
-            label_2.pack(pady=10)
+            label_2["text"] = "Такого студента нет"
             return
         new_value = entry_3.get()
         if new_value != "":
@@ -82,21 +70,14 @@ def edit_student(option):
                         (new_value, first_name, last_name, middle_name, group_name)
                     )
             con.commit()
-            label_2 = ttk.Label(frame_edit_student, text="Данные обновлены")
-            label_2.pack(pady=10)
+            label_2["text"] = "Данные обновлены"
         else:
-            label_2 = ttk.Label(frame_edit_student, text="Замена не может быть пустой")
-            label_2.pack(pady=10)
+            label_2["text"] = "Замена не может быть пустой"
     else:
-        label_2 = ttk.Label(frame_edit_student, text="Неправильный ввод")
-        label_2.pack(pady=10)
+        label_2["text"] = "Неправильный ввод"
 
 
 def show_all_students(flag):
-    global listbox_1, scrollbar_1
-    listbox_1.destroy()
-    scrollbar_1.destroy()
-
     cursor.execute("SELECT * FROM students")
     result = cursor.fetchall()
     cursor.execute("SELECT \
@@ -123,18 +104,10 @@ def show_all_students(flag):
         list_data.append("Ничего не найденно")
 
     var_data = StringVar(value=list_data)
-    listbox_1 = Listbox(frame_show_all_students, listvariable=var_data)
-    listbox_1.pack(side=LEFT, fill=BOTH, expand=1)
-    scrollbar_1 = ttk.Scrollbar(frame_show_all_students, orient="vertical", command=listbox_1.yview)
-    scrollbar_1.pack(side="right", fill='y')
-    listbox_1["yscrollcommand"]=scrollbar_1.set
+    listbox_1["listvariable"] = var_data
 
 
 def show_group_average(flag):
-    global listbox_2, scrollbar_2
-    listbox_2.destroy()
-    scrollbar_2.destroy()
-
     cursor.execute("SELECT \
                         students.group_name, \
                         AVG(grades.grade) AS average_group_grade \
@@ -157,11 +130,7 @@ def show_group_average(flag):
     if not found:
         list_data.append("Ничего не найденно")
     var_data = StringVar(value=list_data)
-    listbox_2 = Listbox(frame_show_group_average, listvariable=var_data)
-    listbox_2.pack(side=LEFT, fill=BOTH, expand=1)
-    scrollbar_2 = ttk.Scrollbar(frame_show_group_average, orient="vertical", command=listbox_2.yview)
-    scrollbar_2.pack(side="right", fill='y')
-    listbox_2["yscrollcommand"]=scrollbar_2.set
+    listbox_2["listvariable"] = var_data
     
 
 
@@ -215,7 +184,8 @@ frame_butt_1.columnconfigure(1, weight=1)
 
 tk.Button(frame_butt_1, text="Добавить", bg="green", width=15, command=lambda: [operation_on_student(True), entry_1.delete(0, last="end")]).grid(column=0, row=0)
 tk.Button(frame_butt_1, text="Удалить", bg="red", width=15, command=lambda: [operation_on_student(False), entry_1.delete(0, last="end")]).grid(column=1, row=0)
-label_1 = ttk.Label()
+label_1 = ttk.Label(frame_operation_on_student)
+label_1.pack(pady=10)
 
 
 frame_edit_student = ttk.Frame(root)
@@ -239,7 +209,8 @@ ttk.Button(frame_butt_2, text="Замена\nфамилии", command=lambda: [e
 ttk.Button(frame_butt_2, text="Замена\nимени", command=lambda: [edit_student("last_name"), entry_3.delete(0, last="end")]).grid(column=1, row=0)
 ttk.Button(frame_butt_2, text="Замена\nотчества", command=lambda: [edit_student("middle_name"), entry_3.delete(0, last="end")]).grid(column=2, row=0)
 ttk.Button(frame_butt_2, text="Замена\nгруппы", command=lambda: [edit_student("group_name"), entry_3.delete(0, last="end")]).grid(column=3, row=0)
-label_2 = ttk.Label()
+label_2 = ttk.Label(frame_edit_student)
+label_2.pack(pady=10)
 
 
 frame_show_all_students = ttk.Frame(root)
