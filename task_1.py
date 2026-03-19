@@ -1,4 +1,6 @@
 import sqlite3
+import time
+import threading
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
@@ -34,6 +36,10 @@ def operation_on_student(flag):
                 label_1["text"] = "Студент удалён"
     else:
         label_1["text"] = "Неправильный ввод"
+    def task():
+        time.sleep(1.5)
+        label_1["text"] = ''
+    threading.Thread(target=task).start()
 
 
 def edit_student(option):
@@ -45,36 +51,40 @@ def edit_student(option):
 
         if not result:
             label_2["text"] = "Такого студента нет"
-            return
-        new_value = entry_3.get()
-        if new_value != "":
-            match option:
-                case "first_name":
-                    cursor.execute(
-                        "UPDATE students SET first_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
-                        (new_value, first_name, last_name, middle_name, group_name)
-                    )
-                case "last_name":
-                    cursor.execute(
-                        "UPDATE students SET last_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
-                        (new_value, first_name, last_name, middle_name, group_name)
-                    )
-                case "middle_name":
-                    cursor.execute(
-                        "UPDATE students SET middle_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
-                        (new_value, first_name, last_name, middle_name, group_name)
-                    )
-                case "group_name":
-                    cursor.execute(
-                        "UPDATE students SET group_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
-                        (new_value, first_name, last_name, middle_name, group_name)
-                    )
-            con.commit()
-            label_2["text"] = "Данные обновлены"
         else:
-            label_2["text"] = "Замена не может быть пустой"
+            new_value = entry_3.get()
+            if new_value != "":
+                match option:
+                    case "first_name":
+                        cursor.execute(
+                            "UPDATE students SET first_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
+                            (new_value, first_name, last_name, middle_name, group_name)
+                        )
+                    case "last_name":
+                        cursor.execute(
+                            "UPDATE students SET last_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
+                            (new_value, first_name, last_name, middle_name, group_name)
+                        )
+                    case "middle_name":
+                        cursor.execute(
+                            "UPDATE students SET middle_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
+                            (new_value, first_name, last_name, middle_name, group_name)
+                        )
+                    case "group_name":
+                        cursor.execute(
+                            "UPDATE students SET group_name=? WHERE first_name=? AND last_name=? AND middle_name=? AND group_name=?",
+                            (new_value, first_name, last_name, middle_name, group_name)
+                        )
+                con.commit()
+                label_2["text"] = "Данные обновлены"
+            else:
+                label_2["text"] = "Замена не может быть пустой"
     else:
         label_2["text"] = "Неправильный ввод"
+    def task():
+        time.sleep(1.5)
+        label_2["text"] = ''
+    threading.Thread(target=task).start()
 
 
 def show_all_students(flag):
@@ -210,7 +220,7 @@ ttk.Button(frame_butt_2, text="Замена\nимени", command=lambda: [edit_
 ttk.Button(frame_butt_2, text="Замена\nотчества", command=lambda: [edit_student("middle_name"), entry_3.delete(0, last="end")]).grid(column=2, row=0)
 ttk.Button(frame_butt_2, text="Замена\nгруппы", command=lambda: [edit_student("group_name"), entry_3.delete(0, last="end")]).grid(column=3, row=0)
 label_2 = ttk.Label(frame_edit_student)
-label_2.pack(pady=10)
+label_2.pack()
 
 
 frame_show_all_students = ttk.Frame(root)
